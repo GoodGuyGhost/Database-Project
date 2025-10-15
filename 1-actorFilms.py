@@ -40,34 +40,55 @@ def printItem():
     connection.close()
     print()
 
-def printFilmsForActor():
+def printItemsForChamps():
     connection = getConnection()
     myCursor = connection.cursor()
-    actor_id = input("For which actor_id would you like to view the films? ")
-    myCursor.execute("select item.id, item_name from item join pref_item on item.id=pref_item.item_id where champion_id=%s", (actor_id,))
+    champ_id = input("For which champion id would you like to view the items? ")
+    myCursor.execute("select item.id, item_name from item join pref_item on item.id=pref_item.item_id where champion_id=%s", (champ_id,))
     myResult = myCursor.fetchall()
-    print(f"There are {len(myResult)} films: ")
+    print(f"There are {len(myResult)} items: ")
     for row in myResult:
         print(row)
 
-def printActorsForFilm():
+def printChampsForItem():
     connection = getConnection()
     myCursor = connection.cursor()
-    film_id = input("For which film_id would you like to view the actors? ")
-    myCursor.execute("select actor.actor_id, first_name, last_name from actor join film_actor on actor.actor_id=film_actor.actor_id and film_id=%s", (film_id,))
+    item_id = input("For which item id would you like to use to view champions? ")
+    myCursor.execute("select champions.id, champions.name from champions join pref_item on champions.id=pref_item.champion_id and item_id=%s", (item_id,))
     myResult = myCursor.fetchall()
-    print(f"There are {len(myResult)} actors: ")
+    print(f"There are {len(myResult)} champions: ")
     for row in myResult:
         print(row)
+
+def addChampToItem():
+    connection = getConnection()
+    myCursor = connection.cursor()
+    item_id = input("What item id are we going to add a champion to? ")
+    champ_id = input("What champion id are we using? ")
+    query = "insert into pref_item(item_id, champion_id) values(%s, %s);"
+    myCursor.execute(query, (item_id, champ_id))
+    connection.commit()
+    connection.close()
+
+
+
+def deleteChampFromItem():
+    connection = getConnection()
+    myCursor = connection.cursor()
+    itemToDelete = input("Whats the item id we want? ")
+    championToDelete = input("Whats the champion id we want? ")
+    myCursor.execute("delete from pref_item where item_id=%s and champion_id=%s", (itemToDelete, championToDelete))
+    connection.commit()
+    connection.close()
 
 
 menuText = """Please select one of the following options:
-1) Print Actors
-2) Print Films
-3) Print Films an actor appears in
-4) Print Actors in a film
-5) Add an actor to a film (unimplemented)
-6) Remove an actor from a film (unimplemented)
+1) Print Champions
+2) Print Items
+3) Print Items for a Champion
+4) Print Champions for an Item
+5) Add an Champion to an Item (unimplemented)
+6) Remove a Champion from an Item (unimplemented)
 q) Quit
 """
 
@@ -80,6 +101,10 @@ if __name__ == "__main__":
         elif menuOption == "2":
             printItem()
         elif menuOption == "3":
-            printFilmsForActor()
+            printItemsForChamps()
         elif menuOption == "4":
-            printActorsForFilm()
+            printChampsForItem()
+        elif menuOption == "5":
+            addChampToItem()
+        elif menuOption == "6":
+            deleteChampFromItem()
