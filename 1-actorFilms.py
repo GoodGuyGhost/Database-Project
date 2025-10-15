@@ -44,7 +44,7 @@ def printFilmsForActor():
     connection = getConnection()
     myCursor = connection.cursor()
     actor_id = input("For which actor_id would you like to view the films? ")
-    myCursor.execute("select item.id, item_name from item join pref_item on item.id=pref_item.item_id where champions.id=%s", (actor_id,))
+    myCursor.execute("select item.id, item_name from item join pref_item on item.id=pref_item.item_id where actor_id=%s", (actor_id,))
     myResult = myCursor.fetchall()
     print(f"There are {len(myResult)} films: ")
     for row in myResult:
