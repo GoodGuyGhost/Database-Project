@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header %}
+League of Legends Champions
+{% endblock %}
+
+{% block content %}
+
+<table>
+  <tr>
+    <th>Champion Name</th>
+    <th>Champion Origin</th>
+    <th>Champion Attack Type</th>
+  </tr>
+  {% for row in collection %}
+  <tr>
+    <td>
+      {{row[0]}}
+    </td>
+    <td>
+      {{row[1]}}
+    </td>
+    <td>
+      {{row[2]}}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Insert a new value here</h2>
+<form action="">
+  Champion Name: <input type="text" name="champname"><br />
+  Champion Origin: <input type="text" name="champorigin"><br />
+  Champion Attack Type: <input type="text" name="champatk"><br />
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}
