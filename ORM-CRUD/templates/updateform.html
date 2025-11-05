@@ -1,0 +1,20 @@
+<html>
+
+<body>
+    <form action="update">
+        <input type="hidden" name="id" value="{{staff.staff_id}}" />
+        <label for=firstName>First name: </label><input id=firstName type="text" name="firstName"
+            value="{{staff.first_name}}" />
+        <label for=lastName>Last name: </label><input id=lastName type="text" name="lastName"
+            value="{{staff.last_name}}" />
+        <label for=email>Email: </label><input id=email type="text" name="email" 
+            value="{{staff.email}}"/>
+        <label for=username>Username: </label><input id=username type="text" name="username" 
+            value="{{staff.username}}"/>
+        <label for=password>Password: </label><input id=password type="text" name="password" 
+            value="{{staff.password}}"/>
+        <button type="submit">Update Staff</button>
+    </form>
+</body>
+
+</html>

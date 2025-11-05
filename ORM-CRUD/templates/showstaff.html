@@ -1,0 +1,15 @@
+<html>
+
+<body>
+    <a href="/">Return to menu</a><br />
+    <ul>
+        {% for staff in staff %}
+        <li> {{staff.staff_id }} - {{ staff.first_name }} {{staff.last_name}} {{staff.email}} {{staff.username}} {{staff.password}}
+            <a href="updateform?id={{staff.staff_id}}">update</a>
+            <a href="delete?id={{staff.staff_id}}">delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>
