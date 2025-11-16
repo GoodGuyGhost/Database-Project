@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block header %}{{pageTitle}}{% endblock %}
+{% block title %}Showing Items{% endblock %}
+
+
+{% block content %}
+
+<table>
+  <tr>
+    <th>Item ID</th>
+    <th>Item Name</th>
+    <th>Attack Damage</th>
+    <th>Ability Power</th>
+    <th>Armor</th>
+  </tr>
+  {% for row in itemList %}
+  <tr>
+    <td>
+      {{row[0]}}
+    </td>
+    <td>
+      {{row[1]}}
+    </td>
+    <td>
+      {{row[2]}}
+    </td>
+    <td>
+      {{row[3]}}
+    </td>
+    <td>
+      {{row[4]}}
+    </td>
+    <td>
+      <a href="/showPrefItem?item_id={{row[0]}}">View Registered Students</a><br />
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% if otheritems %}
+<form>
+  <select name="item_id">
+    <option>Add item to a champion</option>
+    {% for otheritem in otheritems %}
+    <option value='{{ otheritem[0] }}'>{{otheritem[1]}} {{otheritem[2]}}
+    </option>
+    {% endfor %}
+  </select>
+  <button type="submit" value="prefItem">Add a preferred item to a champion</button>
+  <input type="hidden" name="champion_id" value="{{ champId }}" />
+</form>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}{{pageTitle}}{% endblock %}
+{% block title %}Showing Students{% endblock %}
+
+
+{% block content %}
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Champion Name</th>
+    <th>Champion Origin</th>
+    <th>Attack Style</th>
+  </tr>
+  {% for row in championList %}
+  <tr>
+    <td>
+      {{row[0]}}
+    </td>
+    <td>
+      {{row[1]}}
+    </td>
+    <td>
+      {{row[2]}}
+    </td>
+    <td>
+      {{row[3]}}
+    </td>
+    <td>
+      <a href="/showItem?champion_id={{row[0]}}">View Registered Sections</a><br />
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
