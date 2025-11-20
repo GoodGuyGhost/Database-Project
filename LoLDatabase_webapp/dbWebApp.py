@@ -62,8 +62,9 @@ def showItem():
     mycursor = connection.cursor()
     mycursor2= connection.cursor()
 
-    
     champID = request.args.get('champion_id')
+   
+
     if champID is not None:
         
         itemId = request.args.get('item_id')
@@ -71,6 +72,7 @@ def showItem():
             mycursor.execute("""INSERT into pref_item (champion_id, item_id) values (%s, %s)
                              """, (champID, itemId))
             connection.commit()
+        
 
         mycursor.execute("""select item.id, item_name, attack_damage, ability_power, armor, champions.name
                          from item 
@@ -78,21 +80,20 @@ def showItem():
                          join champions on champions.id=pref_item.champion_id
                          where champion_id=%s""", (champID,))
         items = mycursor.fetchall()
-        print(items)
-        
+        #print(items)
         
         
         if len(items) >= 1:
             champName = items[0][5]
             mycursor.execute("""select distinct item.id, item_name from item join pref_item on item.id=pref_item.item_id where item.id not in(select item_id from pref_item where pref_item.champion_id=%s)""", (champID,))
             otheritems = mycursor.fetchall()
-            print(otheritems)
+            #print(otheritems)
         elif champID is not None:
             mycursor2.execute("select champions.name from champions where champions.id=%s",(champID,))
             champName = mycursor2.fetchall()
             mycursor.execute("""select distinct item.id, item_name from item join pref_item on item.id=pref_item.item_id where item.id not in(select item_id from pref_item where pref_item.champion_id=%s)""", (champID,))
             otheritems = mycursor.fetchall()
-            print(otheritems)
+            #print(otheritems)
         else:
             champName = "Unknown"
             otheritems = None
@@ -106,7 +107,7 @@ def showItem():
 
     mycursor.close()
     connection.close()
-    print(f"{champID=}")
+    #print(f"{champID=}")
     return render_template('items.html', itemList=items, pageTitle=pageTitle, otheritems=otheritems, champId=champID )
 
 @app.route("/showPrefItem", methods=['GET'])
@@ -136,7 +137,6 @@ def showPrefItem():
     connection.close()
     return render_template('item-pref.html', championList=myresult, pageTitle=pageTitle)
 
-'''
 @app.route("/addItem", methods=['GET'])
 def addItem():
     mycursor = connection.cursor()
@@ -146,19 +146,71 @@ def addItem():
     newdps = request.args.get('dps')
     newap = request.args.get('ap')
     newarmor = request.args.get('armor')
-    if newname is not None and neworigin is not None and newatk is not None:
-        mycursor.execute("INSERT into champions (name, origin, attack_style) values (%s, %s, %s)", (newname, neworigin, newatk))
+    if newname is not None or newdps is not None or newap is not None or newarmor is not None:
+        mycursor.execute("INSERT into item (item_name, attack_damage, ability_power, armor) values (%s, %s, %s, %s)", (newname, newdps, newap, newarmor))
         connection.commit()
     elif request.args.get('delete') == 'true':
         deleteID = request.args.get('id')
-        mycursor.execute("DELETE from champions where id=%s", (deleteID,))
+        mycursor.execute("DELETE from item where id=%s", (deleteID,))
         connection.commit()
 
     # Fetch the current values of the speaker table
-    mycursor.execute("Select id, name, origin, attack_style from champions")
+    mycursor.execute("Select id, item_name, attack_damage, ability_power, armor from item")
     myresult = mycursor.fetchall()
     mycursor.close()
-    return render_template('champ-list.html', collection=myresult)
-'''
+    return render_template('addItems.html', collection=myresult)
+
+@app.route("/updateItem")
+def updateItem():
+    id = request.args.get('id')
+    name = request.args.get('itemname')
+    dps = request.args.get('dps')
+    ap = request.args.get('ap')
+    armor = request.args.get('armor')
+    if id is None:
+        return "Error, id not specified"
+    elif name is not None and dps is not None and ap is not None and armor is not None:
+        mycursor = connection.cursor()
+        mycursor.execute("UPDATE item set item_name=%s, attack_damage=%s, ability_power=%s, armor=%s where id=%s", (name, dps, ap, armor, id))
+        mycursor.close()
+        connection.commit()
+        return redirect(url_for('addItem'))
+
+    mycursor = connection.cursor()
+    mycursor.execute("Select item_name, attack_damage, ability_power, armor from item where id=%s;", (id,))
+    existingName, existingDps, existingAp, existingArmor = mycursor.fetchone()
+    mycursor.close()
+    return render_template('item-update.html', id=id, existingName=existingName, existingDps=existingDps, existingAp=existingAp, existingArmor=existingArmor)
+
+@app.route("/updatePrefItem")
+def updatePrefItem():
+    id = request.args.get('id')
+    Idchamp = request.args.get('Idchamp')
+    Iditem = request.args.get('Iditem')
+    if id is None:
+        return "Error, id not specified"
+    elif Idchamp is not None:
+        mycursor = connection. cursor()
+        mycursor.execute("""INSERT into pref_item (champion_id, item_id) values (%s, %s)""", (Idchamp, Iditem))
+        mycursor.close()
+        connection.commit()
+        return redirect(url_for('addItem'))
+    
+    return render_template('update-prefItem.html')
+
+@app.route("/deletePrefItem")
+def deletePrefItem():
+    champid = request.args.get('Idchamp')
+    itemid = request.args.get('Iditem')
+    if id is None:
+        return "Error, id not specified"
+    elif champid is not None and itemid is not None:
+        mycursor = connection.cursor()
+        mycursor.execute("""DELETE from pref_item where item_id=%s and champion_id=%s""", (itemid, champid))
+        mycursor.close()
+        connection.commit()
+        return redirect(url_for('showPrefItem'))
+    return render_template('delete_prefItem.html')
+
 if __name__ == '__main__':
     app.run(port=8000, debug=True, host="0.0.0.0")
